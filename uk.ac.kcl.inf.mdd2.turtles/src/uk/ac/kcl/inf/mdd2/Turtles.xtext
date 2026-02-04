@@ -59,11 +59,11 @@ Multiplication returns Expression:
 
 Primary returns Expression:
 	IntLiteral |
-	VariableReference |
+	IntVarExpression |
 	'(' Addition ')'
 ;
 
-VariableReference:
+IntVarExpression:
 	ref=[VariableDeclaration]
 ;
 
