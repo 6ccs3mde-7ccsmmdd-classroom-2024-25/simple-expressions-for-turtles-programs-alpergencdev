@@ -4,59 +4,66 @@ generate turtles "http://www.ac.uk/kcl/inf/mdd2/Turtles"
 
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
-TurtlesProgram:
-	statements += Statement *
+TurtleProgram:
+	statements += Statement*
 ;
-
-
+	
 Statement:
-	MoveStatement | TurnStatement | LoopStatement | VariableDeclarationStatement
+	MoveStatement |
+	TurnStatement |
+	LoopStatement |
+	VariableDeclaration
 ;
 
-VariableDeclarationStatement:
-	'var' name=ID '=' value=AnyInt
+VariableDeclaration:
+	"var" name=ID "=" value=INT
 ;
 
 LoopStatement:
-	times=AnyInt 'times' 'do'
-		statements += Statement*
-	'end'
+	count = IntExpression "times" "do"
+	  statements += Statement+
+	"end"
 ;
 
 MoveStatement:
-	dir=MoveDirection '(' dist=AnyInt ')'
+	command = MoveCommand "(" steps = IntExpression ")"
 ;
 
-TurnStatement:
-	'turn' dir=TurnDirection 'by' deg=REAL 'degrees'
-;
-
-enum MoveDirection:
+enum MoveCommand:
 	forward | backward
 ;
 
-enum TurnDirection:
+TurnStatement:
+	"turn" command = TurnCommand "by" degrees = REAL "degrees"
+;
+
+enum TurnCommand:
 	left | right
 ;
 
-Addition returns Expression:
-  Multiplication ({Addition.left=current} '+' right=Multiplication)*;
-  
-Multiplication returns Expression:
-  Primary ({Multiplication.left=current} '*' right=Primary)*;
-  
-Primary returns Expression:
-  NumberLiteral |
-  '(' Addition ')';
-  
-NumberLiteral:
-  value=INT;
+IntExpression:
+	val = INT |
+	var = [VariableDeclaration] |
+	exp = Addition
+;
 
 REAL returns ecore::EFloat hidden():
-	INT? '.' INT
+	INT? "." INT
 ;
-AnyInt:
-	val=INT
-	| ref=[VariableDeclarationStatement]
-	| exp=Addition
+
+Addition returns Expression:
+	Multiplication ({Addition.left = current} '+' right=Multiplication)*
+;
+
+Multiplication returns Expression:
+	Primary ({Multiplication.left = current}'*' right = Primary)*
+;
+
+Primary returns Expression:
+	NumberLiteral |
+	'(' Addition ')'
+;
+
+NumberLiteral:
+	value = INT
 ;
