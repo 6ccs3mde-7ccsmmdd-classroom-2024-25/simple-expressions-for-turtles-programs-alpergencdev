@@ -42,9 +42,7 @@ enum TurnCommand:
 ;
 
 IntExpression:
-	val = INT |
-	var = [VariableDeclaration] |
-	exp = Addition
+	Addition
 ;
 
 REAL returns ecore::EFloat hidden():
@@ -61,7 +59,12 @@ Multiplication returns Expression:
 
 Primary returns Expression:
 	NumberLiteral |
+	VariableReference |
 	'(' Addition ')'
+;
+
+VariableReference:
+	ref=[VariableDeclaration]
 ;
 
 NumberLiteral:
